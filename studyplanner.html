@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyPlanner - Organize Your Academic Life</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 250px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            font-size: 1.5rem;
+        }
+
+        .logo h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 1rem;
+        }
+
+        .nav-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: #64748b;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: #f1f5f9;
+            color: #334155;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+            max-width: calc(100vw - 250px);
+            overflow-x: hidden;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Welcome Banner */
+        .welcome-banner {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+            margin-bottom: 2rem;
+        }
+
+        .welcome-banner h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8fafc;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #f1f5f9;
+        }
+
+        /* Tasks */
+        .task-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .task-item:hover {
+            background: #f1f5f9;
+        }
+
+        .task-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+        }
+
+        .task-checkbox {
+            width: 1.25rem;
+            height: 1.25rem;
+            cursor: pointer;
+        }
+
+        .task-details h4 {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .task-details.completed h4 {
+            text-decoration: line-through;
+            color: #64748b;
+        }
+
+        .task-meta {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .priority-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .priority-high {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .priority-medium {
+            background: #fffbeb;
+            color: #d97706;
+            border: 1px solid #fed7aa;
+        }
+
+        .priority-low {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            background: #f1f5f9;
+            height: 0.5rem;
+            border-radius: 0.25rem;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        /* Timer */
+        .timer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .timer-display {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .timer-circle {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-background {
+            fill: none;
+            stroke: #e2e8f0;
+            stroke-width: 8;
+        }
+
+        .progress-ring-progress {
+            fill: none;
+            stroke: #10b981;
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 879.646;
+            stroke-dashoffset: 879.646;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .timer-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .timer-time {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .timer-label {
+            font-size: 1rem;
+            color: #10b981;
+            font-weight: 500;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .timer-btn {
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+        }
+
+        .timer-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .stat-text {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .header-info h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .header-info p {
+            color: #64748b;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .dashboard-grid,
+            .timer-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                max-width: 100vw;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Navigation Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🎓</span>
+                    <h1>StudyPlanner</h1>
+                </div>
+            </div>
+            
+            <ul class="nav-menu">
+                <li><a class="nav-link active" onclick="showPage('dashboard')">📊 Dashboard</a></li>
+                <li><a class="nav-link" onclick="showPage('tasks')">✅ Tasks</a></li>
+                <li><a class="nav-link" onclick="showPage('goals')">🎯 Goals</a></li>
+                <li><a class="nav-link" onclick="showPage('timer')">⏱️ Study Timer</a></li>
+                <li><a class="nav-link" onclick="showPage('analytics')">📈 Analytics</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page active">
+                <div class="welcome-banner">
+                    <h2>Welcome back, Student! 👋</h2>
+                    <p>You have <span id="todayTaskCount">3</span> tasks for today and <span id="studyStreak">5</span> day study streak!</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <p class="stat-label">Tasks Completed</p>
+                                <p class="stat-value">15</p>
+                            </div>
+                            <div class="stat-icon">✅</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <p class="stat-label">Study Hours</p>
+                                <p class="stat-value">45.5h</p>
+                            </div>
+                            <div class="stat-icon">🕒</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <p class="stat-label">Weekly Progress</p>
+                                <p class="stat-value">152%</p>
+                            </div>
+                            <div class="stat-icon">🎯</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <p class="stat-label">Study Streak</p>
+                                <p class="stat-value">5 days</p>
+                            </div>
+                            <div class="stat-icon">📈</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>📅 Today's Tasks</h3>
+                            <button class="btn btn-primary" onclick="showTaskForm()">+ Add Task</button>
+                        </div>
+                        <div class="card-content">
+                            <div class="task-item">
+                                <div class="task-info">
+                                    <input type="checkbox" class="task-checkbox" onchange="toggleTaskDemo(this)">
+                                    <div class="task-details">
+                                        <h4>Mathematics - Calculus Review</h4>
+                                        <div class="task-meta">Mathematics • 120 min</div>
+                                    </div>
+                                </div>
+                                <span class="priority-badge priority-high">high</span>
+                            </div>
+
+                            <div class="task-item">
+                                <div class="task-info">
+                                    <input type="checkbox" class="task-checkbox" onchange="toggleTaskDemo(this)">
+                                    <div class="task-details">
+                                        <h4>History Essay - World War II</h4>
+                                        <div class="task-meta">History • 180 min</div>
+                                    </div>
+                                </div>
+                                <span class="priority-badge priority-medium">medium</span>
+                            </div>
+
+                            <div class="task-item">
+                                <div class="task-info">
+                                    <input type="checkbox" class="task-checkbox" onchange="toggleTaskDemo(this)">
+                                    <div class="task-details">
+                                        <h4>Chemistry Quiz Prep</h4>
+                                        <div class="task-meta">Chemistry • 60 min</div>
+                                    </div>
+                                </div>
+                                <span class="priority-badge priority-high">high</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>🎯 Active Goals</h3>
+                        </div>
+                        <div class="card-content">
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span style="font-weight: 500; font-size: 0.875rem;">Complete Calculus Course</span>
+                                    <span style="font-size: 0.875rem; color: #64748b;">65%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 65%"></div>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span style="font-weight: 500; font-size: 0.875rem;">Maintain 3.8 GPA</span>
+                                    <span style="font-size: 0.875rem; color: #64748b;">78%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 78%"></div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">
+                                View All Goals
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tasks Page -->
+            <div id="tasks" class="page">
+                <div class="page-header">
+                    <div class="header-info">
+                        <h1>Task Manager</h1>
+                        <p>Organize and track your study tasks</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>✅ All Tasks</h3>
+                        <button class="btn btn-primary" onclick="showTaskForm()">+ Add New Task</button>
+                    </div>
+                    <div class="card-content">
+                        <div class="task-item">
+                            <div class="task-info">
+                                <input type="checkbox" class="task-checkbox" onchange="toggleTaskDemo(this)">
+                                <div class="task-details">
+                                    <h4>Mathematics - Calculus Review</h4>
+                                    <p style="color: #64748b; margin: 0.5rem 0; font-size: 0.875rem;">Review integration and differentiation concepts</p>
+                                    <div class="task-meta">
+                                        Subject: Mathematics • 120 min • Due: Sep 26, 2024
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="task-actions">
+                                <span class="priority-badge priority-high">high</span>
+                                <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem;">✏️</button>
+                                <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; color: #dc2626;">🗑️</button>
+                            </div>
+                        </div>
+
+                        <div class="task-item">
+                            <div class="task-info">
+                                <input type="checkbox" class="task-checkbox" onchange="toggleTaskDemo(this)">
+                                <div class="task-details">
+                                    <h4>History Essay - World War II</h4>
+                                    <p style="color: #64748b; margin: 0.5rem 0; font-size: 0.875rem;">Complete research and write 1500-word essay</p>
+                                    <div class="task-meta">
+                                        Subject: History • 180 min • Due: Sep 28, 2024
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="task-actions">
+                                <span class="priority-badge priority-medium">medium</span>
+                                <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem;">✏️</button>
+                                <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; color: #dc2626;">🗑️</button>
+                            </div>
+                        </div>
+
+                        <div class="task-item">
+                            <div class="task-info">
+                                <input type="checkbox" class="task-checkbox" checked onchange="toggleTaskDemo(this)">
+                                <div class="task-details completed">
+                                    <h4>Physics Lab Report</h4>
+                                    <p style="color: #64748b; margin: 0.5rem 0; font-size: 0.875rem;">Analyze pendulum motion experiment data</p>
+                                    <div class="task-meta">
+                                        Subject: Physics • 90 min • Due: Sep 30, 2024
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="task-actions">
+                                <span class="priority-badge priority-low">low</span>
+                                <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem;">✏️</button>
+                                <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; color: #dc2626;">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goals Page -->
+            <div id="goals" class="page">
+                <div class="page-header">
+                    <div class="header-info">
+                        <h1>Goals</h1>
+                        <p>Track your academic and personal goals</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-content" style="padding: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                            <div>
+                                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">🎯 Complete Calculus Course</h3>
+                                <p style="color: #64748b; margin-bottom: 0.75rem;">Master all calculus concepts before semester end</p>
+                                <div style="font-size: 0.875rem; color: #64748b;">
+                                    Target: Dec 15, 2024 • 80 days left
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-secondary">✏️</button>
+                                <button class="btn btn-secondary" style="color: #dc2626;">🗑️</button>
+                            </div>
+                        </div>
+                        
+                        <div style="margin: 1rem 0;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="font-weight: 500;">Overall Progress</span>
+                                <span style="color: #64748b;">65%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 65%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-content" style="padding: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                            <div>
+                                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">🎯 Maintain 3.8 GPA</h3>
+                                <p style="color: #64748b; margin-bottom: 0.75rem;">Keep high academic performance throughout semester</p>
+                                <div style="font-size: 0.875rem; color: #64748b;">
+                                    Target: Dec 20, 2024 • 85 days left
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-secondary">✏️</button>
+                                <button class="btn btn-secondary" style="color: #dc2626;">🗑️</button>
+                            </div>
+                        </div>
+                        
+                        <div style="margin: 1rem 0;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="font-weight: 500;">Overall Progress</span>
+                                <span style="color: #64748b;">78%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 78%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timer Page -->
+            <div id="timer" class="page">
+                <div class="page-header">
+                    <div class="header-info">
+                        <h1>Study Timer</h1>
+                        <p>Focus with the Pomodoro Technique</p>
+                    </div>
+                </div>
+
+                <div class="timer-grid">
+                    <div class="card">
+                        <div class="timer-display">
+                            <div class="timer-circle">
+                                <svg class="progress-ring" width="300" height="300">
+                                    <circle class="progress-ring-background" cx="150" cy="150" r="140"></circle>
+                                    <circle class="progress-ring-progress" cx="150" cy="150" r="140" id="progressCircle"></circle>
+                                </svg>
+                                <div class="timer-content">
+                                    <div class="timer-time" id="timerDisplay">25:00</div>
+                                    <div class="timer-label">Focus Time</div>
+                                </div>
+                            </div>
+
+                            <div class="timer-controls">
+                                <button class="btn btn-primary timer-btn" onclick="toggleTimer()">▶️ Start</button>
+                                <button class="btn btn-secondary timer-btn" onclick="resetTimer()">🔄 Reset</button>
+                            </div>
+
+                            <div class="timer-stats">
+                                <div class="stat">
+                                    <div class="stat-number" id="sessionCount">0</div>
+                                    <div class="stat-text">Sessions</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-number">0</div>
+                                    <div class="stat-text">Cycles</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>⏱️ Timer Settings</h3>
+                        </div>
+                        <div class="card-content">
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Focus Time (minutes)</label>
+                                <input type="number" value="25" min="1" max="60" style="width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Short Break (minutes)</label>
+                                <input type="number" value="5" min="1" max="30" style="width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Long Break (minutes)</label>
+                                <input type="number" value="15" min="5" max="60" style="width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 0.5rem;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Page -->
+            <div id="analytics" class="page">
+                <div class="page-header">
+                    <div class="header-info">
+                        <h1>Analytics</h1>
+                        <p>Track your study progress and performance</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>📊 Performance Overview</h3>
+                        </div>
+                        <div class="card-content">
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span style="font-weight: 500;">Completion Rate</span>
+                                    <span style="color: #64748b;">78%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 78%"></div>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span style="font-weight: 500;">Mathematics</span>
+                                    <span style="color: #64748b;">85%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 85%"></div>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span style="font-weight: 500;">History</span>
+                                    <span style="color: #64748b;">72%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 72%"></div>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span style="font-weight: 500;">Physics</span>
+                                    <span style="color: #64748b;">90%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 90%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>🏆 Achievements</h3>
+                        </div>
+                        <div class="card-content">
+                            <div style="padding: 0.75rem; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 0.5rem; margin-bottom: 0.75rem;">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <span style="font-size: 1.25rem;">🏆</span>
+                                    <div>
+                                        <div style="font-weight: 500; color: #92400e;">Task Master</div>
+                                        <div style="font-size: 0.75rem; color: #b45309;">Completed 15 tasks</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="padding: 0.75rem; background: #dcfce7; border: 1px solid #16a34a; border-radius: 0.5rem; margin-bottom: 0.75rem;">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <span style="font-size: 1.25rem;">📈</span>
+                                    <div>
+                                        <div style="font-weight: 500; color: #15803d;">Study Streak</div>
+                                        <div style="font-size: 0.75rem; color: #16a34a;">5 days in a row</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="padding: 0.75rem; background: #dbeafe; border: 1px solid #3b82f6; border-radius: 0.5rem;">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <span style="font-size: 1.25rem;">⏱️</span>
+                                    <div>
+                                        <div style="font-weight: 500; color: #1d4ed8;">Timer Champion</div>
+                                        <div style="font-size: 0.75rem; color: #2563eb;">25 focus sessions</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Simple navigation system
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Add active class to clicked nav link
+            event.target.classList.add('active');
+        }
+
+        // Timer functionality
+        let timerInterval;
+        let timeLeft = 25 * 60; // 25 minutes in seconds
+        let isRunning = false;
+        let sessions = 0;
+
+        function toggleTimer() {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                document.querySelector('.timer-btn').textContent = '▶️ Start';
+                isRunning = false;
+            } else {
+                timerInterval = setInterval(updateTimer, 1000);
+                document.querySelector('.timer-btn').textContent = '⏸️ Pause';
+                isRunning = true;
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 25 * 60;
+            isRunning = false;
+            document.querySelector('.timer-btn').textContent = '▶️ Start';
+            updateTimerDisplay();
+        }
+
+        function updateTimer() {
+            timeLeft--;
+            updateTimerDisplay();
+            updateTimerProgress();
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                sessions++;
+                document.getElementById('sessionCount').textContent = sessions;
+                alert('🎉 Session completed! Time for a break!');
+                timeLeft = 5 * 60; // 5 minute break
+                updateTimerDisplay();
+                document.querySelector('.timer-btn').textContent = '▶️ Start';
+                isRunning = false;
+            }
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateTimerProgress() {
+            const totalTime = 25 * 60; // 25 minutes
+            const progress = (totalTime - timeLeft) / totalTime;
+            const circumference = 2 * Math.PI * 140; // radius = 140
+            const strokeDashoffset = circumference * (1 - progress);
+            
+            const progressCircle = document.getElementById('progressCircle');
+            if (progressCircle) {
+                progressCircle.style.strokeDashoffset = strokeDashoffset;
+            }
+        }
+
+        // Task functionality
+        function toggleTaskDemo(checkbox) {
+            const taskDetails = checkbox.parentElement.querySelector('.task-details');
+            if (checkbox.checked) {
+                taskDetails.classList.add('completed');
+            } else {
+                taskDetails.classList.remove('completed');
+            }
+        }
+
+        function showTaskForm() {
+            alert('📝 Task form would open here! This is a demo version showcasing the UI and basic interactions. In a full version, this would open a modal to create/edit tasks with local storage persistence.');
+        }
+
+        // Initialize timer display
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTimerDisplay();
+        });
+    </script>
+</body>
+</html>
