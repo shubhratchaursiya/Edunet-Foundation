@@ -1,5 +1,5 @@
 # Edunet-Foundation
-# 📚 Study Planner App
+# 📚 Study Planner Website
 
 A simple and effective **web-based study planner** built with **HTML, CSS, and JavaScript (Local Storage)**.
 This project helps students **organize their study schedules, set goals, manage tasks, track time with a Pomodoro timer, and analyze productivity** — all in one place!
